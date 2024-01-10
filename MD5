@@ -1,0 +1,10 @@
+720345b50c0aabc142bcbd1993fbdff5 *DESCRIPTION
+158d861689770e1d4fae85e02fd6cbed *NAMESPACE
+8c0f81d52d987cd01462d10f3b0daeec *R/gen.simu.data.R
+ab14ccd443392af31e818e58558689a0 *R/get.asymp.power.R
+c1629432b674859ad7bed9114faf2912 *R/get.min.size.R
+d64b411851995eb1e2140b6c47404e8a *R/proportion.test.R
+e3815895a80a74f52607d12b8d2a068c *man/gen.simu.data.Rd
+fa835efd4d322fd00147de22cf8edef0 *man/get.asymp.power.Rd
+b3d14e0566d705be4cd62308827a2bdb *man/get.min.size.Rd
+a569301fbd96d38aa1994a3ac163e288 *man/proportion.test.Rd

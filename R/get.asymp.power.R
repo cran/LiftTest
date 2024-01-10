@@ -1,0 +1,89 @@
+#' A Bootstrap Proportion Test for Brand Lift Testing (Liu et al., 2023)
+#' @description This function generates the asymptotic power of the proposed
+#' bootstrap test. Two methods are provided: the asymptotic power based on
+#' the relative lift and the asymptotic power the absolute lift. 
+#' For more details, please refer to the paper Liu et al., (2023).
+#' 
+#' @import stats
+#' @usage
+#' get.asymp.power(n1, n2, p1, p2, method='relative', alpha=0.05)
+#' @param n1 sample size of the control group
+#' @param n2 sample size of the treatment group
+#' @param p1 success probability of the control group
+#' @param p2 success probability of the treatment group
+#' @param method two methods are provided: method = 
+#' c(\eqn{\texttt{`relative'}, \texttt{`absolute'}}).
+#' \eqn{\texttt{`relative'}} means min sample size based on the relative lift.
+#' \eqn{\texttt{`absolute'}} means min sample size based on the absolute lift.
+#' @param alpha significance level. By default alpha = 0.05.
+#' 
+#' @return
+#' Return the asymptotic power
+#' @details 
+#' 
+#'  Let \eqn{N = n_1 + n_2} and \eqn{\kappa = n_1/N}. We define
+#'  \deqn{
+#'      \sigma_{a,n} = \sqrt{n_1^{-1}p_1(1-p_1) + n_2^{-1}p_2(1-p_2)},
+#'  }
+#'  \deqn{
+#'      \bar\sigma_{a,n} = \sqrt{(n_1^{-1} +  n_2^{-1})\bar p(1-\bar p)}.
+#'  }
+#' where \eqn{\bar p = \kappa p_1 + (1-\kappa) p_2}. \eqn{\sigma_{a,n}}
+#' is the standard deviation of the absolute lift and 
+#' \eqn{\bar\sigma_{a,n}} can be viewed as the standard deviation of 
+#' the combined sample of the control and treatment groups.
+#' Let \eqn{\delta_a = p_2 - p_1} be the absolute lift.
+#' The asymptotic power function based on the absolute lift is given by
+#' \deqn{
+#'     \beta_{Absolute}(\delta_a) \approx \Phi\left( -cz_{\alpha/2} + 
+#'     \frac{\delta_a}{\sigma_{a,n}} \right) + \Phi\left( -cz_{\alpha/2} - 
+#'     \frac{\delta_a}{\sigma_{a,n}} \right).
+#' }
+#' The asymptotic power function based on the relative lift is given by
+#' \deqn{
+#'     \beta_{Relative}(\delta_a) \approx \Phi 
+#'     \left( -cz_{\alpha/2} \frac{p_0}{\bar p} + 
+#'     \frac{\delta_a}{\sigma_{a,n}} \right) + 
+#'     \Phi \left( -cz_{\alpha/2} \frac{p_0}{\bar p} - 
+#'     \frac{\delta_a}{\sigma_{a,n}} \right),
+#' }
+#' 
+#' where \eqn{\Phi(\cdot)} is the CDF of the standard normal distribution \eqn{N(0,1)}, 
+#' \eqn{z_{\alpha/2}} is the upper \eqn{(1-\alpha/2)} quantile of \eqn{N(0,1)}, 
+#' and \eqn{c = {\bar\sigma_{a,n}}/\sigma_{a,n}}.
+#' @md
+#' 
+#' @export
+#' @references
+#' Wanjun Liu, Xiufan Yu, Jialiang Mao, Xiaoxu Wu, and Justin Dyer. 2023.
+#' Quantifying the Effectiveness of Advertising: A Bootstrap Proportion Test
+#' for Brand Lift Testing. \emph{In Proceedings of the 32nd ACM International Conference 
+#' on Information and Knowledge Management (CIKM ’23)}
+#' 
+#' @examples
+#' n1 <- 100; n2 <- 100; p1 <- 0.1; p2 <- 0.2
+#' get.asymp.power(n1, n2, p1, p2, method='relative')
+
+
+get.asymp.power <- function(n1, n2, p1, p2, method='relative', alpha=0.05){
+  
+  p_treat <- n2 / (n1+n2)
+  kappa <- 1 - p_treat
+  p_bar <- kappa*p1 + (1-kappa)*p2
+  delta <- p2 - p1
+  sigma <- sqrt(p1*(1-p1) / n1 + p2*(1-p2) / n2)
+  sigma_bar <- sqrt(p_bar*(1-p_bar) * (1/n1 + 1/n2))
+  c <- sigma_bar/sigma
+  z <- qnorm(1 - alpha/2, 0, 1)
+
+  if (method == 'relative'){
+    ratio <- p1 / p_bar
+  } else if (method == 'absolute'){
+    ratio <- 1
+  } else {
+    stop(paste0("No such method ", method, "!"))
+  }
+  power <- pnorm(-c*z*ratio + delta/sigma) + pnorm(-c*z*ratio - delta/sigma)
+  
+  return(power)
+}
